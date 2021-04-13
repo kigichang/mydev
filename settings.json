@@ -1,0 +1,18 @@
+{
+    "editor.rulers": [
+        80
+    ],
+    "markdown-preview-enhanced.puppeteerArgs": [
+        "--no-sandbox", 
+        "--disable-setuid-sandbox"
+    ],
+    "remote.containers.defaultExtensions": [
+        "shd101wyy.markdown-preview-enhanced",
+        "davidanson.vscode-markdownlint",
+        "slevesque.vscode-hexdump",
+        "in4margaret.compareit",
+        "TabNine.tabnine-vscode",
+        "golang.Go",
+        "eamodio.gitlens"
+    ]
+}

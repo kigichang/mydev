@@ -1,0 +1,67 @@
+# 將開發會用到的軟體，先 build 一個 image。
+
+ARG GO_VERSION
+FROM golang:${GO_VERSION}
+
+LABEL maintainer="kigi.chang@gmail.com"
+
+# 其他的 ARG 一定要放在 FROM 之後，否則會被清空。
+# Plantuml 版本
+ARG PLANTUML_VERSION
+
+# 預設編碼 UTF-8
+ENV LANG=C.UTF-8
+
+# Install GCP Cloud SDK
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" \
+    | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+    | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+    && apt-get update -y \
+    && apt-get install google-cloud-sdk -y
+
+RUN apt-get install -y \
+    # jdk
+    default-jdk \
+    # git large file system
+    git-lfs \
+    # ZSH
+    zsh \
+    # Tmux
+    tmux \
+    # Vim
+    vim \
+    ffmpeg \
+    zip \
+    # tmux 與系統 clipboard 溝通用
+    xsel \
+    # plantuml 選項功能
+    graphviz \
+    curl \
+    wget \
+    # markdown preview enhanced 用 pandoc 輸出用
+    pandoc \
+    # pandoc 會用 imagemagick 轉圖
+    imagemagick
+
+# pandoc 輸出 PDF 用
+RUN apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
+
+# plantuml 的 jar 檔
+#COPY plantuml.jar /usr/lib/jvm/default-java/lib/
+RUN curl -o /usr/lib/jvm/default-java/lib/plantuml.jar https://repo1.maven.org/maven2/net/sourceforge/plantuml/plantuml/${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar
+
+# Install Chrome
+RUN apt-get update \
+   && apt-get install -y gnupg \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+      --no-install-recommends
+
+# Install nodejs and puppeteer
+RUN apt-get update
+RUN curl -sL https://deb.nodesource.com/setup_15.x  | bash -
+RUN apt-get -y install nodejs
+RUN npm install
+RUN npm i puppeteer
