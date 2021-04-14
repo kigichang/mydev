@@ -37,6 +37,7 @@ run:
 		-u $(UID):$(GID) \
 		--network host \
 		-v $(HOME)/.ssh:/home/$(USER)/.ssh:ro \
+		-v $(HOME)/.vscode-server:/home/$(USER)/.vscode-server:z \
 		-v $(HOME)/projects:/home/$(USER)/projects:z \
 		mydev:$(GO_VERSION) \
 		/bin/zsh
